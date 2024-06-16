@@ -24,7 +24,7 @@ economic_data <- read_csv("~/STAT184/stat184-test/184-test/economic data.csv")
 
 ## Examine each data source
 
-# BTC Prices Jan to May 2024
+# <BTC Prices 2014-2024>
 ```{r}
 
 # Check structure and column names
@@ -54,8 +54,11 @@ ggplot(bitcoin_historical, aes(x = Date, y = Close)) +
 #potential outliers
 
 boxplot(bitcoin_historical$Close, main = "Boxplot of Bitcoin Closing Prices (2014-2024)", ylab = "Close Price")
-
+outliers <- boxplot.stats(bitcoin_historical$Close)$out
+outliers
 ```
+
+
 <Origin and Purpose>
 
 Who: This data is provided by a cryptocurrency exchange or financial data provider.
@@ -78,11 +81,11 @@ Volume: Number of Bitcoin traded on the given date (Type: Numeric)
 <Potential Outliers>
 The price ranges around 60k were the Outliers which they were All Time High prices were in 2021. 
 
-```
 
 
 
-# ETH Prices 2017-2024
+
+# <ETH Prices 2017-2024>
 ```{r}
 # Check structure and column names
 str(ethereum_historical)
@@ -99,6 +102,7 @@ ethereum_historical <- ethereum_historical %>%
 summary(ethereum_historical)
 
 ```
+
 ```{r}
 # Plot Ethereum Historical Prices (2017-2024)
 ggplot(ethereum_historical, aes(x = Date, y = Close)) + 
@@ -108,6 +112,42 @@ ggplot(ethereum_historical, aes(x = Date, y = Close)) +
   ylab("Close Price")
 
 ```
+
+```{r}
+#potential outliers
+
+boxplot(ethereum_historical$Close, main = "Boxplot of Ethereum Closing Prices (2017-2024)", ylab = "Close Price")
+
+# Identify potential outliers
+outliers <- boxplot.stats(ethereum_historical$Close)$out
+outliers
+```
+
+
+<Origin and Purpose>
+
+Who: This data is provided by a cryptocurrency exchange or financial data provider.
+What: It includes historical Ethereum prices from 2017 to 2024.
+When: The data covers daily Ethereum prices from January 1, 2017, to May 31, 2024.
+Where: This data is sourced from online cryptocurrency exchanges or financial data services.
+Why: The purpose of this data is to analyze long-term price trends of Ethereum.
+How: The data was collected from the historical records of Ethereum transactions on various exchanges.
+
+<Key Variables>
+
+Date: Date of the recorded price (Type: Date)
+Open: Opening price of Ethereum on the given date (Type: Numeric)
+High: Highest price of Ethereum on the given date (Type: Numeric)
+Low: Lowest price of Ethereum on the given date (Type: Numeric)
+Close: Closing price of Ethereum on the given date (Type: Numeric)
+Adj Close: Adjusted closing price of Ethereum, accounting for splits and dividends (Type: Numeric)
+Volume: Number of Ethereum traded on the given date (Type: Numeric)
+
+<Potential Outliers>
+The price ranges around mid 40k were the outliers which they were All Time High prices were in 2021. 
+
+
+
 # Economic Indicators Over Time
 ```{r}
 # Check structure and column names
@@ -123,7 +163,9 @@ economic_data <- economic_data %>%
 
 # Summary and plots
 summary(economic_data)
+```
 
+```{r}
 # Plot Economic Indicators Over Time
 ggplot(economic_data, aes(x = date)) +
   geom_line(aes(y = `manufacturing pmi`, color = "Manufacturing PMI")) +
@@ -135,6 +177,76 @@ ggplot(economic_data, aes(x = date)) +
   scale_color_manual(values = c("Manufacturing PMI" = "blue", "Services PMI" = "green", "Consumer Confidence" = "red"))
 
 ```
+```{r}
+
+# Convert relevant columns to numeric + summary
+economic_data <- economic_data %>%
+  mutate(across(c(`manufacturing pmi`, `services pmi`, `consumer confidence`), as.numeric))
+
+# Summary statistics
+summary(economic_data)
+```
+
+```{r}
+# Boxplot to check for potential outliers in Manufacturing PMI
+ggplot(economic_data, aes(x = "", y = `manufacturing pmi`)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of Manufacturing PMI") +
+  ylab("Manufacturing PMI")
+```
+
+```{r}
+# Identify potential outliers in Manufacturing PMI
+outliers_manufacturing <- boxplot.stats(economic_data$`manufacturing pmi`)$out
+outliers_manufacturing
+```
+```{r}
+# Boxplot to check for potential outliers in Services PMI
+ggplot(economic_data, aes(x = "", y = `services pmi`)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of Services PMI") +
+  ylab("Services PMI")
+```
+
+```{r}
+# Identify potential outliers in Services PMI
+outliers_services <- boxplot.stats(economic_data$`services pmi`)$out
+outliers_services
+```
+
+```{r}
+# Boxplot to check for potential outliers in Consumer Confidence
+ggplot(economic_data, aes(x = "", y = `consumer confidence`)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of Consumer Confidence") +
+  ylab("Consumer Confidence")
+```
+
+```{r}
+# Identify potential outliers in Consumer Confidence
+outliers_consumer <- boxplot.stats(economic_data$`consumer confidence`)$out
+outliers_consumer
+```
+<Origin and Purpose>
+
+Who: This data is provided by financial data providers or governmental agencies.
+What: It includes various economic indicators like PMI, Service PMI, and Consumer Confidence.
+When: The data covers economic indicators from January 1, 2020, to May 31, 2024.
+Where: This data is sourced from official reports, surveys, and financial data services.
+Why: The purpose of this data is to analyze the impact of economic indicators on cryptocurrency prices.
+How: The data was collected through surveys, reports, and financial data aggregation services.
+
+<Key Variables>
+
+date: Date of the recorded economic indicator (Type: Date)
+manufacturing pmi: Purchasing Managers' Index for manufacturing (Type: Numeric)
+services pmi: Purchasing Managers' Index for services (Type: Numeric)
+consumer confidence: Consumer Confidence Index (Type: Numeric)
+
+<Potential Outliers>
+There were Service and Manufacturing PMI had several outliers, but not seen in consumer confidence.
+
+
 ##Comprarison BTC for each economic Indicator to see the trend
 ```{r}
 # Filter economic data to include only dates from 2020 to 2024
