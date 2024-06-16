@@ -1,0 +1,88 @@
+---
+title: "Activity: Popular Names"
+author: "Hanbyeol Lee"
+date: "6/3/2024"
+output: html_notebook
+---
+
+
+
+# Set Up
+
+```{r}
+# load necessary packages
+library(tidyverse)
+library(mosaic)
+library(dcData)
+```
+
+```{r}
+# Load the BabyNames data into RStudio environment (from dcData package)
+data("BabyNames")
+
+```
+
+# Activity
+
+**Goal**: By the end of the activity, each team will create a graph showing ups and downs in the popularity of four names according to the U.S. social security administration  
+
+
+### Step 1
+```{r}
+glimpse(BabyNames)
+```
+### Step 2
+
+The goal is to create a graph showing the popularity trends of two male and two female names over time.
+
+
+
+
+### Step 3
+
+All variable ('name', 'sex', 'count','year') will be used in the graph. There will be no variables will be excluded from the graph.
+
+* 'year' will be used an x-axis
+* 'name' will be used to differentiate lines.
+* 'count' will be used an y-axis to represent the popularity (total number of occurences) of each name.  It might be aggregated if there were multiple entries for the same name and year combination.
+* 'sex' will be used to color the lines in the graph to differentiate between male and female names.
+
+### Step 4
+
+* Cases might be filtered to include only the chosen names.
+* Cases will be grouped by year, name, and sex, and the total occurrences will be summed.
+* The dataset will be filtered to include only the years of interest.
+
+### Step 5
+
+1. Filter the dataset to include only the chosen male and female names.
+2. Group the data by year, name, and sex.
+3. Summarize the total number of occurrences for each name by year and gender.
+4. Filter the dataset to include only the relevant years.
+
+
+### Step 7: modify the starter code given in the book to produce your own R code..
+```{r}
+# Step 1: Filter the dataset to include only the chosen male and female names
+chosen_names <- c("Emma", "Olivia", "Noah", "Liam")
+filtered_data <- BabyNames %>% 
+  filter(name %in% chosen_names)
+
+# Step 2: Group the data by year, name, and sex
+grouped_data <- filtered_data %>%
+  group_by(year, name, sex)
+
+# Step 3: Summarize the total number of occurrences for each name by year and gender.
+summarized_data <- grouped_data %>% 
+  summarize(count = sum(count), .groups = 'drop')
+glyph_ready_data <- summarized_data
+
+# Create the graph using ggplot
+glyph_ready_data %>% 
+  ggplot(aes(x = year, y = count, group = name)) +
+  geom_line(size = 1, alpha = 0.5, aes(color = sex)) +
+  ylab("Popularity") + xlab("Year") +
+  ggtitle("Popularity of Selected Names Over Time by Gender")
+```
+
+

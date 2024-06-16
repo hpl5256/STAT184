@@ -1,0 +1,139 @@
+---
+title: "HELPrct (Data Verbs) Activity"
+author: "Hanbyeol Lee"
+date: "May 30"
+output: html_notebook
+---
+
+## Set Up:
+
+```{r}
+# load packages
+library(tidyverse)  # for data verbs like `group-by()` & `summarise()`
+library(mosaicData) # includes `HELPrct` data set 
+library(mosaic)     # includes `mplot()` interactive plot builder
+library(esquisse)   # includes `esquisser()` interactive plot builder
+
+
+# Load the HELPrct data from `mosaicData` into our RStudio environment
+data("HELPrct", package = "mosaicData")
+
+```
+
+## Data Description
+
+*TASK 1: Write a couple of sentences describing the `HELPrct` data--What is the setting for the data? What are they about?* I got the description from help function: These are survey data collected by the US National Center for Health Statistics (NCHS). Each year, approximately 5,000 individuals are interviewed in their homes. The data cover 1999-2004.
+
+Note that the NHANES package provides data from 2009-2012, including more health, life-style, and socio-economic variables.
+
+The Format has 31,126 observations on the following 31 variables, sex, age, pregnant, ethnicity, death, floowup, smoker, diabetic, etc.
+
+## Basic Summaries with `summarise()`
+
+*TASK 2: Produce an expression involving `summarize()` and `HELPrct` that will produce the following.*
+
+1.  *number of people (cases) in `HELPrct` study*
+2.  *combined total number of times in the past 6 months all the people in `HELPrct` entered a detox program (measured at baseline)*
+3.  *mean time (in days) to first use of any substance post-detox for all the people in `HELPrct`*
+
+```{r}
+
+summary_stats <- HELPrct %>%
+  summarise(
+    num_people = n(),
+    total_detox_entries = sum(e2b, na.rm = TRUE),
+    mean_time_to_first_use = mean(daysanysub, na.rm = TRUE)
+  )
+
+head(summary_stats)
+
+```
+
+## Subgrouping with `group_by()`
+
+*TASK 3: Repeat Task 2 above, but calculate the results group-by-group. Show your code and write a sentence or two about what you observe in the results for each of the following:*
+
+1.  *males versus females*
+
+```{r}
+groupby_summary_stats <- HELPrct %>%
+  group_by(sex)  %>%
+  summarise(
+   num_people = n(),
+    total_detox_entries = sum(e2b, na.rm = TRUE),
+    mean_time_to_first_use = mean(daysanysub, na.rm = TRUE)
+  )
+
+head(groupby_summary_stats)
+
+```
+
+2.  *homeless or not*
+
+```{r}
+groupby_summary_stats <- HELPrct %>%
+  group_by(homeless)  %>%
+  summarise(
+   num_people = n(),
+    total_detox_entries = sum(e2b, na.rm = TRUE),
+    mean_time_to_first_use = mean(daysanysub, na.rm = TRUE)
+  )
+
+head(groupby_summary_stats)
+```
+
+3.  *substance*
+
+```{r}
+groupby_summary_stats <- HELPrct %>%
+  group_by(substance)  %>%
+  summarise(
+   num_people = n(),
+    total_detox_entries = sum(e2b, na.rm = TRUE),
+    mean_time_to_first_use = mean(daysanysub, na.rm = TRUE)
+  )
+
+head(groupby_summary_stats)
+```
+
+4.  *break down the homeless versus housed further, by sex*
+
+```{r}
+groupby_summary_stats <- HELPrct %>%
+  group_by(homeless,sex)  %>%
+  summarise(
+   num_people = n(),
+    total_detox_entries = sum(e2b, na.rm = TRUE),
+    mean_time_to_first_use = mean(daysanysub, na.rm = TRUE)
+  )
+
+head(groupby_summary_stats)
+```
+
+5.  *break down the homeless versus housed further, by substance*
+
+```{r}
+groupby_summary_stats <- HELPrct %>%
+  group_by(homeless,substance)  %>%
+  summarise(
+   num_people = n(),
+    total_detox_entries = sum(e2b, na.rm = TRUE),
+    mean_time_to_first_use = mean(daysanysub, na.rm = TRUE)
+  )
+
+head(groupby_summary_stats)
+```
+
+## TASK 4:
+
+*Include one or more interesting plots of the data involving at least 3 variables per plot. Write a few sentences to explain the story that your plot tells about these data. You can use one of the relationships that you studied in Task 2, or you can explore a different group of variables in the `HELPrct` that show something interesting. You may use interactive tools like `esquisser` or `mplot` but you must copy/paste the `ggplot2` code to create the plot here (i.e., do not embed a screenshot or image file).*
+
+# The boxplot shows the age distribution for each primary substance of abuse.
+
+```{r}
+ggplot(HELPrct) +
+  aes(x = age, y = substance, colour = sex) +
+  geom_boxplot(fill = "#112446") +
+  scale_color_hue(direction = 1) +
+  theme_minimal()
+```

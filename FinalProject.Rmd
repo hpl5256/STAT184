@@ -1,0 +1,276 @@
+---
+title: "Economic Indicators and Cryptocurrency Prices"
+author: "Your Name"
+date: "2024-06-16"
+output: html_document
+---
+
+## Guiding Research Question
+How do economic indicators like PMI, Service PMI, and Consumer Confidence influence the prices of Bitcoin and Ethereum?
+
+## Each Data Intake 
+
+```{r}
+# Load required libraries
+library(tidyverse)
+
+# Load data
+bitcoin_recent <- read_csv("~/STAT184/stat184-test/184-test/Bitcoin USD (01-05.2024).csv")
+bitcoin_historical <- read_csv("~/STAT184/stat184-test/184-test/BTC-USD (2014-2024).csv")
+ethereum_recent <- read_csv("~/STAT184/stat184-test/184-test/ETH-USD (01-05.2024).csv")
+ethereum_historical <- read_csv("~/STAT184/stat184-test/184-test/ETH-USD (2017-2024).csv")
+economic_data <- read_csv("~/STAT184/stat184-test/184-test/economic data.csv")
+```
+
+# BTC Prices Jan to May 2024
+```{r}
+# Check structure and column names
+str(bitcoin_recent)
+colnames(bitcoin_recent)
+
+# Convert Date column to Date type if necessary
+bitcoin_recent$Date <- as.Date(bitcoin_recent$Date, format = "%Y-%m-%d")
+
+# Convert relevant columns to numeric and round to nearest hundredth
+bitcoin_recent <- bitcoin_recent %>%
+  mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
+
+# Summary and plots
+summary(bitcoin_recent)
+
+
+ggplot(bitcoin_recent, aes(x = Date, y = Close)) + 
+  geom_line() + 
+  ggtitle("Bitcoin Prices (Jan-May 2024)") +
+  xlab("Date") + 
+  ylab("Close Price")
+
+
+```
+# BTC Historical Prices 2014 to 2024
+```{r}
+# Check structure and column names
+str(bitcoin_historical)
+colnames(bitcoin_historical)
+
+# Convert Date column to Date type if necessary
+bitcoin_historical$Date <- as.Date(bitcoin_historical$Date, format = "%Y-%m-%d")
+
+# Convert relevant columns to numeric and round to nearest hundredth
+bitcoin_historical <- bitcoin_historical %>%
+  mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
+
+# Summary and plots
+summary(bitcoin_historical)
+
+# Plot Bitcoin Historical Prices (2014-2024)
+ggplot(bitcoin_historical, aes(x = Date, y = Close)) + 
+  geom_line() + 
+  ggtitle("Bitcoin Prices (2014-2024)") +
+  xlab("Date") + 
+  ylab("Close Price")
+
+
+```
+
+
+# ETH Prices Jan-May 2024
+ 
+```{r}
+# Check structure and column names
+str(ethereum_recent)
+colnames(ethereum_recent)
+
+# Convert Date column to Date type if necessary
+ethereum_recent$Date <- as.Date(ethereum_recent$Date, format = "%Y-%m-%d")
+
+# Convert relevant columns to numeric and round to nearest hundredth
+ethereum_recent <- ethereum_recent %>%
+  mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
+
+# Summary and plots
+summary(ethereum_recent)
+
+# Plot Ethereum Prices (Jan-May 2024)
+ggplot(ethereum_recent, aes(x = Date, y = Close)) + 
+  geom_line() + 
+  ggtitle("Ethereum Prices (Jan-May 2024)") +
+  xlab("Date") + 
+  ylab("Close Price")
+
+
+```
+
+# ETH Prices 2017-2024
+```{r}
+# Check structure and column names
+str(ethereum_historical)
+colnames(ethereum_historical)
+
+# Convert Date column to Date type if necessary
+ethereum_historical$Date <- as.Date(ethereum_historical$Date, format = "%Y-%m-%d")
+
+# Convert relevant columns to numeric and round to nearest hundredth
+ethereum_historical <- ethereum_historical %>%
+  mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
+
+# Summary and plots
+summary(ethereum_historical)
+
+# Plot Ethereum Historical Prices (2017-2024)
+ggplot(ethereum_historical, aes(x = Date, y = Close)) + 
+  geom_line() + 
+  ggtitle("Ethereum Prices (2017-2024)") +
+  xlab("Date") + 
+  ylab("Close Price")
+
+```
+# Economic Indicators Over Time
+```{r}
+# Check structure and column names
+str(economic_data)
+colnames(economic_data)
+
+# Convert Date column to Date type if necessary
+economic_data$date <- as.Date(economic_data$date, format = "%Y-%m-%d")
+
+# Convert relevant columns to numeric and round to nearest hundredth
+economic_data <- economic_data %>%
+  mutate(across(c(`manufacturing pmi`, `services pmi`, `consumer confidence`), ~ round(as.numeric(.), 2)))
+
+# Summary and plots
+summary(economic_data)
+
+# Plot Economic Indicators Over Time
+ggplot(economic_data, aes(x = date)) +
+  geom_line(aes(y = `manufacturing pmi`, color = "Manufacturing PMI")) +
+  geom_line(aes(y = `services pmi`, color = "Services PMI")) +
+  geom_line(aes(y = `consumer confidence`, color = "Consumer Confidence")) +
+  ggtitle("Economic Indicators Over Time") +
+  xlab("Date") +
+  ylab("Indicator Value") +
+  scale_color_manual(values = c("Manufacturing PMI" = "blue", "Services PMI" = "green", "Consumer Confidence" = "red"))
+
+```
+##Comprarison BTC for each economic Indicator to see the trend
+```{r}
+# Filter economic data to include only dates from 2020 to 2024
+economic_data_filtered <- economic_data %>%
+  filter(date >= as.Date("2020-01-01") & date <= as.Date("2024-12-31"))
+
+# Filter Bitcoin historical data to include only dates from 2020 to 2024
+bitcoin_historical_filtered <- bitcoin_historical %>%
+  filter(Date >= as.Date("2020-01-01") & Date <= as.Date("2024-12-31"))
+
+# Merge the filtered data
+bitcoin_data <- merge(bitcoin_historical_filtered, economic_data_filtered, by.x = "Date", by.y = "date")
+
+# Rescale Manufacturing PMI to match the range of Bitcoin Prices
+max_price <- max(bitcoin_data$Close, na.rm = TRUE)
+min_price <- min(bitcoin_data$Close, na.rm = TRUE)
+
+bitcoin_data <- bitcoin_data %>%
+  mutate(manufacturing_pmi_scaled = scales::rescale(`manufacturing pmi`, to = c(min_price, max_price)))
+
+# Plot with rescaled Manufacturing PMI
+ggplot(bitcoin_data, aes(x = Date)) +
+  geom_line(aes(y = Close, color = "Bitcoin Price")) +
+  geom_line(aes(y = manufacturing_pmi_scaled, color = "Manufacturing PMI (scaled)")) +
+  ggtitle("Bitcoin Price and Manufacturing PMI Over Time (2020-2024)") +
+  xlab("Date") +
+  ylab("Value") +
+  scale_color_manual(values = c("Bitcoin Price" = "black", "Manufacturing PMI (scaled)" = "blue"))
+
+
+```
+
+```{r}
+# Calculate correlation and fit a linear model
+lm_manufacturing <- lm(Close ~ `manufacturing pmi`, data = bitcoin_data)
+r_squared_manufacturing <- summary(lm_manufacturing)$r.squared
+
+# Plot with rescaled Manufacturing PMI and regression line
+ggplot(bitcoin_data, aes(x = `manufacturing pmi`, y = Close)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue") +
+  ggtitle(paste("Bitcoin Price vs. Manufacturing PMI\nR-squared =", round(r_squared_manufacturing, 2))) +
+  xlab("Manufacturing PMI") +
+  ylab("Bitcoin Price")
+
+
+```
+```{r}
+# Calculate correlation and fit a linear model
+lm_services <- lm(Close ~ `services pmi`, data = bitcoin_data)
+r_squared_services <- summary(lm_services)$r.squared
+
+# Plot with rescaled Services PMI and regression line
+ggplot(bitcoin_data, aes(x = `services pmi`, y = Close)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "green") +
+  ggtitle(paste("Bitcoin Price vs. Services PMI\nR-squared =", round(r_squared_services, 2))) +
+  xlab("Services PMI") +
+  ylab("Bitcoin Price")
+
+
+```
+
+```{r}
+# Calculate correlation and fit a linear model
+lm_consumer <- lm(Close ~ `consumer confidence`, data = bitcoin_data)
+r_squared_consumer <- summary(lm_consumer)$r.squared
+
+# Plot with rescaled Consumer Confidence and regression line
+ggplot(bitcoin_data, aes(x = `consumer confidence`, y = Close)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red") +
+  ggtitle(paste("Bitcoin Price vs. Consumer Confidence\nR-squared =", round(r_squared_consumer, 2))) +
+  xlab("Consumer Confidence") +
+  ylab("Bitcoin Price")
+
+
+```
+
+
+
+#Line Plot for Bitcoin Price and Manufacturing PMI
+
+```{r}
+# Rescale Manufacturing PMI to match the range of Bitcoin Prices
+max_price <- max(bitcoin_data$Close, na.rm = TRUE)
+min_price <- min(bitcoin_data$Close, na.rm = TRUE)
+
+bitcoin_data <- bitcoin_data %>%
+  mutate(manufacturing_pmi_scaled = scales::rescale(`manufacturing pmi`, to = c(min_price, max_price)))
+
+# Plot with rescaled Manufacturing PMI
+ggplot(bitcoin_data, aes(x = Date)) +
+  geom_line(aes(y = Close, color = "Bitcoin Price")) +
+  geom_line(aes(y = manufacturing_pmi_scaled, color = "Manufacturing PMI (scaled)")) +
+  ggtitle("Bitcoin Price and Manufacturing PMI Over Time") +
+  xlab("Date") +
+  ylab("Value") +
+  scale_color_manual(values = c("Bitcoin Price" = "black", "Manufacturing PMI (scaled)" = "blue"))
+
+
+
+```
+#Line Plot for Bitcoin Price and Service PMI
+```{r}
+# Rescale Services PMI to match the range of Bitcoin Prices
+bitcoin_data <- bitcoin_data %>%
+  mutate(services_pmi_scaled = scales::rescale(`services pmi`, to = c(min_price, max_price)))
+
+# Plot with rescaled Services PMI
+ggplot(bitcoin_data, aes(x = Date)) +
+  geom_line(aes(y = Close, color = "Bitcoin Price")) +
+  geom_line(aes(y = services_pmi_scaled, color = "Services PMI (scaled)")) +
+  ggtitle("Bitcoin Price and Services PMI Over Time") +
+  xlab("Date") +
+  ylab("Value") +
+  scale_color_manual(values = c("Bitcoin Price" = "black", "Services PMI (scaled)" = "green"))
+
+
+
+
+```
