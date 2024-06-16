@@ -15,40 +15,18 @@ How do economic indicators like PMI, Service PMI, and Consumer Confidence influe
 library(tidyverse)
 
 # Load data
-bitcoin_recent <- read_csv("~/STAT184/stat184-test/184-test/Bitcoin USD (01-05.2024).csv")
+
 bitcoin_historical <- read_csv("~/STAT184/stat184-test/184-test/BTC-USD (2014-2024).csv")
-ethereum_recent <- read_csv("~/STAT184/stat184-test/184-test/ETH-USD (01-05.2024).csv")
 ethereum_historical <- read_csv("~/STAT184/stat184-test/184-test/ETH-USD (2017-2024).csv")
 economic_data <- read_csv("~/STAT184/stat184-test/184-test/economic data.csv")
 ```
 
+
+## Examine each data source
+
 # BTC Prices Jan to May 2024
 ```{r}
-# Check structure and column names
-str(bitcoin_recent)
-colnames(bitcoin_recent)
 
-# Convert Date column to Date type if necessary
-bitcoin_recent$Date <- as.Date(bitcoin_recent$Date, format = "%Y-%m-%d")
-
-# Convert relevant columns to numeric and round to nearest hundredth
-bitcoin_recent <- bitcoin_recent %>%
-  mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
-
-# Summary and plots
-summary(bitcoin_recent)
-
-
-ggplot(bitcoin_recent, aes(x = Date, y = Close)) + 
-  geom_line() + 
-  ggtitle("Bitcoin Prices (Jan-May 2024)") +
-  xlab("Date") + 
-  ylab("Close Price")
-
-
-```
-# BTC Historical Prices 2014 to 2024
-```{r}
 # Check structure and column names
 str(bitcoin_historical)
 colnames(bitcoin_historical)
@@ -62,44 +40,47 @@ bitcoin_historical <- bitcoin_historical %>%
 
 # Summary and plots
 summary(bitcoin_historical)
-
+```
+```{r}
 # Plot Bitcoin Historical Prices (2014-2024)
 ggplot(bitcoin_historical, aes(x = Date, y = Close)) + 
   geom_line() + 
   ggtitle("Bitcoin Prices (2014-2024)") +
   xlab("Date") + 
   ylab("Close Price")
-
-
 ```
 
-
-# ETH Prices Jan-May 2024
- 
 ```{r}
-# Check structure and column names
-str(ethereum_recent)
-colnames(ethereum_recent)
+#potential outliers
 
-# Convert Date column to Date type if necessary
-ethereum_recent$Date <- as.Date(ethereum_recent$Date, format = "%Y-%m-%d")
-
-# Convert relevant columns to numeric and round to nearest hundredth
-ethereum_recent <- ethereum_recent %>%
-  mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
-
-# Summary and plots
-summary(ethereum_recent)
-
-# Plot Ethereum Prices (Jan-May 2024)
-ggplot(ethereum_recent, aes(x = Date, y = Close)) + 
-  geom_line() + 
-  ggtitle("Ethereum Prices (Jan-May 2024)") +
-  xlab("Date") + 
-  ylab("Close Price")
-
+boxplot(bitcoin_historical$Close, main = "Boxplot of Bitcoin Closing Prices (2014-2024)", ylab = "Close Price")
 
 ```
+<Origin and Purpose>
+
+Who: This data is provided by a cryptocurrency exchange or financial data provider.
+What: It includes historical Bitcoin prices from 2014 to 2024.
+When: The data covers daily Bitcoin prices from January 1, 2014, to May 31, 2024.
+Where: This data is sourced from online cryptocurrency exchanges or financial data services.
+Why: The purpose of this data is to analyze long-term price trends of Bitcoin.
+How: The data was collected from the historical records of Bitcoin transactions on various exchanges.
+
+<Key Variables>
+
+Date: Date of the recorded price (Type: Date)
+Open: Opening price of Bitcoin on the given date (Type: Numeric)
+High: Highest price of Bitcoin on the given date (Type: Numeric)
+Low: Lowest price of Bitcoin on the given date (Type: Numeric)
+Close: Closing price of Bitcoin on the given date (Type: Numeric)
+Adj Close: Adjusted closing price of Bitcoin, accounting for splits and dividends (Type: Numeric)
+Volume: Number of Bitcoin traded on the given date (Type: Numeric)
+
+<Potential Outliers>
+The price ranges around 60k were the Outliers which they were All Time High prices were in 2021. 
+
+```
+
+
 
 # ETH Prices 2017-2024
 ```{r}
@@ -117,6 +98,8 @@ ethereum_historical <- ethereum_historical %>%
 # Summary and plots
 summary(ethereum_historical)
 
+```
+```{r}
 # Plot Ethereum Historical Prices (2017-2024)
 ggplot(ethereum_historical, aes(x = Date, y = Close)) + 
   geom_line() + 
