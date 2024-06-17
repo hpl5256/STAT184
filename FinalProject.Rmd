@@ -1,14 +1,15 @@
 ---
-title: "Economic Indicators and Cryptocurrency Prices"
-author: "Your Name"
+title: "Economic Indicators and BTC Prices"
+author: "Hanbyeol Lee"
 date: "2024-06-16"
 output: html_document
 ---
 
 ## Guiding Research Question
-How do economic indicators like PMI, Service PMI, and Consumer Confidence influence the prices of Bitcoin and Ethereum?
 
-## Each Data Intake 
+How do economic indicators like PMI, Service PMI, and Consumer Confidence influence the prices of Bitcoin?
+
+## Each Data Intake
 
 ```{r}
 # Load required libraries
@@ -17,14 +18,13 @@ library(tidyverse)
 # Load data
 
 bitcoin_historical <- read_csv("~/STAT184/stat184-test/184-test/BTC-USD (2014-2024).csv")
-ethereum_historical <- read_csv("~/STAT184/stat184-test/184-test/ETH-USD (2017-2024).csv")
 economic_data <- read_csv("~/STAT184/stat184-test/184-test/economic data.csv")
 ```
 
-
 ## Examine each data source
 
-# <BTC Prices 2014-2024>
+# \<BTC Prices 2014-2024\>
+
 ```{r}
 
 # Check structure and column names
@@ -38,9 +38,11 @@ bitcoin_historical$Date <- as.Date(bitcoin_historical$Date, format = "%Y-%m-%d")
 bitcoin_historical <- bitcoin_historical %>%
   mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
 
-# Summary and plots
+# Summary statistics
 summary(bitcoin_historical)
+
 ```
+
 ```{r}
 # Plot Bitcoin Historical Prices (2014-2024)
 ggplot(bitcoin_historical, aes(x = Date, y = Close)) + 
@@ -48,121 +50,44 @@ ggplot(bitcoin_historical, aes(x = Date, y = Close)) +
   ggtitle("Bitcoin Prices (2014-2024)") +
   xlab("Date") + 
   ylab("Close Price")
+
 ```
 
 ```{r}
-#potential outliers
-
+# Potential outliers
 boxplot(bitcoin_historical$Close, main = "Boxplot of Bitcoin Closing Prices (2014-2024)", ylab = "Close Price")
 outliers <- boxplot.stats(bitcoin_historical$Close)$out
 outliers
-```
 
+```
 
 <Origin and Purpose>
 
-Who: This data is provided by a cryptocurrency exchange or financial data provider.
-What: It includes historical Bitcoin prices from 2014 to 2024.
-When: The data covers daily Bitcoin prices from January 1, 2014, to May 31, 2024.
-Where: This data is sourced from online cryptocurrency exchanges or financial data services.
-Why: The purpose of this data is to analyze long-term price trends of Bitcoin.
-How: The data was collected from the historical records of Bitcoin transactions on various exchanges.
+Who: This data is provided by a cryptocurrency exchange or financial data provider. What: It includes historical Bitcoin prices from 2014 to 2024. When: The data covers daily Bitcoin prices from January 1, 2014, to May 31, 2024. Where: This data is sourced from online cryptocurrency exchanges or financial data services. Why: The purpose of this data is to analyze long-term price trends of Bitcoin. How: The data was collected from the historical records of Bitcoin transactions on various exchanges.
 
 <Key Variables>
 
-Date: Date of the recorded price (Type: Date)
-Open: Opening price of Bitcoin on the given date (Type: Numeric)
-High: Highest price of Bitcoin on the given date (Type: Numeric)
-Low: Lowest price of Bitcoin on the given date (Type: Numeric)
-Close: Closing price of Bitcoin on the given date (Type: Numeric)
-Adj Close: Adjusted closing price of Bitcoin, accounting for splits and dividends (Type: Numeric)
-Volume: Number of Bitcoin traded on the given date (Type: Numeric)
+Date: Date of the recorded price (Type: Date) Open: Opening price of Bitcoin on the given date (Type: Numeric) High: Highest price of Bitcoin on the given date (Type: Numeric) Low: Lowest price of Bitcoin on the given date (Type: Numeric) Close: Closing price of Bitcoin on the given date (Type: Numeric) Adj Close: Adjusted closing price of Bitcoin, accounting for splits and dividends (Type: Numeric) Volume: Number of Bitcoin traded on the given date (Type: Numeric)
 
-<Potential Outliers>
-The price ranges around 60k were the Outliers which they were All Time High prices were in 2021. 
+<Potential Outliers> The price ranges around 60k were the Outliers which they were All Time High prices were in 2021.
 
+# Economic Indicators Over Time including: origin & purpose, explain key variables, and potential outliers.
 
-
-
-
-# <ETH Prices 2017-2024>
-```{r}
-# Check structure and column names
-str(ethereum_historical)
-colnames(ethereum_historical)
-
-# Convert Date column to Date type if necessary
-ethereum_historical$Date <- as.Date(ethereum_historical$Date, format = "%Y-%m-%d")
-
-# Convert relevant columns to numeric and round to nearest hundredth
-ethereum_historical <- ethereum_historical %>%
-  mutate(across(c(Open, High, Low, Close, `Adj Close`), ~ round(as.numeric(.), 2)))
-
-# Summary and plots
-summary(ethereum_historical)
-
-```
-
-```{r}
-# Plot Ethereum Historical Prices (2017-2024)
-ggplot(ethereum_historical, aes(x = Date, y = Close)) + 
-  geom_line() + 
-  ggtitle("Ethereum Prices (2017-2024)") +
-  xlab("Date") + 
-  ylab("Close Price")
-
-```
-
-```{r}
-#potential outliers
-
-boxplot(ethereum_historical$Close, main = "Boxplot of Ethereum Closing Prices (2017-2024)", ylab = "Close Price")
-
-# Identify potential outliers
-outliers <- boxplot.stats(ethereum_historical$Close)$out
-outliers
-```
-
-
-<Origin and Purpose>
-
-Who: This data is provided by a cryptocurrency exchange or financial data provider.
-What: It includes historical Ethereum prices from 2017 to 2024.
-When: The data covers daily Ethereum prices from January 1, 2017, to May 31, 2024.
-Where: This data is sourced from online cryptocurrency exchanges or financial data services.
-Why: The purpose of this data is to analyze long-term price trends of Ethereum.
-How: The data was collected from the historical records of Ethereum transactions on various exchanges.
-
-<Key Variables>
-
-Date: Date of the recorded price (Type: Date)
-Open: Opening price of Ethereum on the given date (Type: Numeric)
-High: Highest price of Ethereum on the given date (Type: Numeric)
-Low: Lowest price of Ethereum on the given date (Type: Numeric)
-Close: Closing price of Ethereum on the given date (Type: Numeric)
-Adj Close: Adjusted closing price of Ethereum, accounting for splits and dividends (Type: Numeric)
-Volume: Number of Ethereum traded on the given date (Type: Numeric)
-
-<Potential Outliers>
-The price ranges around mid 40k were the outliers which they were All Time High prices were in 2021. 
-
-
-
-# Economic Indicators Over Time
 ```{r}
 # Check structure and column names
 str(economic_data)
 colnames(economic_data)
 
-# Convert Date column to Date type if necessary
+# Convert date column to Date type if necessary
 economic_data$date <- as.Date(economic_data$date, format = "%Y-%m-%d")
 
 # Convert relevant columns to numeric and round to nearest hundredth
 economic_data <- economic_data %>%
   mutate(across(c(`manufacturing pmi`, `services pmi`, `consumer confidence`), ~ round(as.numeric(.), 2)))
 
-# Summary and plots
+# Summary statistics
 summary(economic_data)
+
 ```
 
 ```{r}
@@ -176,7 +101,9 @@ ggplot(economic_data, aes(x = date)) +
   ylab("Indicator Value") +
   scale_color_manual(values = c("Manufacturing PMI" = "blue", "Services PMI" = "green", "Consumer Confidence" = "red"))
 
+
 ```
+
 ```{r}
 
 # Convert relevant columns to numeric + summary
@@ -193,13 +120,17 @@ ggplot(economic_data, aes(x = "", y = `manufacturing pmi`)) +
   geom_boxplot() +
   ggtitle("Boxplot of Manufacturing PMI") +
   ylab("Manufacturing PMI")
+
+
 ```
 
 ```{r}
 # Identify potential outliers in Manufacturing PMI
 outliers_manufacturing <- boxplot.stats(economic_data$`manufacturing pmi`)$out
 outliers_manufacturing
+
 ```
+
 ```{r}
 # Boxplot to check for potential outliers in Services PMI
 ggplot(economic_data, aes(x = "", y = `services pmi`)) +
@@ -227,27 +158,84 @@ ggplot(economic_data, aes(x = "", y = `consumer confidence`)) +
 outliers_consumer <- boxplot.stats(economic_data$`consumer confidence`)$out
 outliers_consumer
 ```
+
 <Origin and Purpose>
 
-Who: This data is provided by financial data providers or governmental agencies.
-What: It includes various economic indicators like PMI, Service PMI, and Consumer Confidence.
-When: The data covers economic indicators from January 1, 2020, to May 31, 2024.
-Where: This data is sourced from official reports, surveys, and financial data services.
-Why: The purpose of this data is to analyze the impact of economic indicators on cryptocurrency prices.
-How: The data was collected through surveys, reports, and financial data aggregation services.
+Who: This data is provided by financial data providers or governmental agencies. What: It includes various economic indicators like PMI, Service PMI, and Consumer Confidence. When: The data covers economic indicators from January 1, 2020, to May 31, 2024. Where: This data is sourced from official reports, surveys, and financial data services. Why: The purpose of this data is to analyze the impact of economic indicators on cryptocurrency prices. How: The data was collected through surveys, reports, and financial data aggregation services.
 
 <Key Variables>
 
-date: Date of the recorded economic indicator (Type: Date)
-manufacturing pmi: Purchasing Managers' Index for manufacturing (Type: Numeric)
-services pmi: Purchasing Managers' Index for services (Type: Numeric)
-consumer confidence: Consumer Confidence Index (Type: Numeric)
+date: Date of the recorded economic indicator (Type: Date) manufacturing pmi: Purchasing Managers' Index for manufacturing (Type: Numeric) services pmi: Purchasing Managers' Index for services (Type: Numeric) consumer confidence: Consumer Confidence Index (Type: Numeric)
 
-<Potential Outliers>
-There were Service and Manufacturing PMI had several outliers, but not seen in consumer confidence.
+<Potential Outliers> There were Service and Manufacturing PMI had several outliers, but not seen in consumer confidence.
 
 
-##Comprarison BTC for each economic Indicator to see the trend
+
+# Calculation of R\^2 to see the correlation between each of economic indicator and BTC price. 
+```{r}
+#Filter economic data to include only dates from 2020 to 2024
+economic_data_filtered <- economic_data %>%
+  filter(date >= as.Date("2020-01-01") & date <= as.Date("2024-12-31"))
+
+# Filter Bitcoin historical data to include only dates from 2020 to 2024
+bitcoin_historical_filtered <- bitcoin_historical %>%
+  filter(Date >= as.Date("2020-01-01") & Date <= as.Date("2024-12-31"))
+
+# Merge the filtered data
+bitcoin_data <- merge(bitcoin_historical_filtered, economic_data_filtered, by.x = "Date", by.y = "date")
+```
+
+```{r}
+# Calculate correlation and fit a linear model
+
+lm_manufacturing <- lm(Close ~ `manufacturing pmi`, data = bitcoin_data)
+r_squared_manufacturing <- summary(lm_manufacturing)$r.squared
+
+# Plot with regression line
+ggplot(bitcoin_data, aes(x = `manufacturing pmi`, y = Close)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue") +
+  ggtitle(paste("Bitcoin Price vs. Manufacturing PMI\nR-squared =", round(r_squared_manufacturing, 2))) +
+  xlab("Manufacturing PMI") +
+  ylab("Bitcoin Price")
+
+
+```
+
+```{r}
+# Calculate correlation and fit a linear model
+lm_services <- lm(Close ~ `services pmi`, data = bitcoin_data)
+r_squared_services <- summary(lm_services)$r.squared
+
+# Plot with regression line
+ggplot(bitcoin_data, aes(x = `services pmi`, y = Close)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "green") +
+  ggtitle(paste("Bitcoin Price vs. Services PMI\nR-squared =", round(r_squared_services, 2))) +
+  xlab("Services PMI") +
+  ylab("Bitcoin Price")
+
+
+```
+
+```{r}
+# Calculate correlation and fit a linear model
+lm_consumer <- lm(Close ~ `consumer confidence`, data = bitcoin_data)
+r_squared_consumer <- summary(lm_consumer)$r.squared
+
+# Plot with rescaled Consumer Confidence and regression line
+ggplot(bitcoin_data, aes(x = `consumer confidence`, y = Close)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red") +
+  ggtitle(paste("Bitcoin Price vs. Consumer Confidence\nR-squared =", round(r_squared_consumer, 2))) +
+  xlab("Consumer Confidence") +
+  ylab("Bitcoin Price")
+
+
+```
+
+# We will make a comparison chart: Manufacturing PMI vs BTC Price since it has the highest correlated percentage.
+
 ```{r}
 # Filter economic data to include only dates from 2020 to 2024
 economic_data_filtered <- economic_data %>%
@@ -279,93 +267,26 @@ ggplot(bitcoin_data, aes(x = Date)) +
 
 ```
 
-```{r}
-# Calculate correlation and fit a linear model
-lm_manufacturing <- lm(Close ~ `manufacturing pmi`, data = bitcoin_data)
-r_squared_manufacturing <- summary(lm_manufacturing)$r.squared
+## Address research question
 
-# Plot with rescaled Manufacturing PMI and regression line
-ggplot(bitcoin_data, aes(x = `manufacturing pmi`, y = Close)) +
-  geom_point() +
-  geom_smooth(method = "lm", color = "blue") +
-  ggtitle(paste("Bitcoin Price vs. Manufacturing PMI\nR-squared =", round(r_squared_manufacturing, 2))) +
-  xlab("Manufacturing PMI") +
-  ylab("Bitcoin Price")
+#Initial Reactions to EDA
 
+Based on the initial exploratory data analysis (EDA), it is observed that among the economic indicators analyzed, the Manufacturing PMI (Purchasing Managers' Index) shows the most significant correlation with Bitcoin prices. This correlation is evidenced by the R-squared value derived from the linear regression model, which indicates a substantial relationship between these variables.
 
-```
-```{r}
-# Calculate correlation and fit a linear model
-lm_services <- lm(Close ~ `services pmi`, data = bitcoin_data)
-r_squared_services <- summary(lm_services)$r.squared
+#Intuition and Observations
 
-# Plot with rescaled Services PMI and regression line
-ggplot(bitcoin_data, aes(x = `services pmi`, y = Close)) +
-  geom_point() +
-  geom_smooth(method = "lm", color = "green") +
-  ggtitle(paste("Bitcoin Price vs. Services PMI\nR-squared =", round(r_squared_services, 2))) +
-  xlab("Services PMI") +
-  ylab("Bitcoin Price")
+<Correlation Between PMI and Bitcoin Prices>:
+
+The Manufacturing PMI demonstrates the highest R-squared value when compared with Bitcoin prices, suggesting that changes in the PMI are closely related to fluctuations in Bitcoin prices. This observation is crucial as it provides a quantitative measure of the relationship, reinforcing the notion that PMI can serve as a significant economic indicator for predicting Bitcoin price movements.
+
+<Lagging Nature of PMI Trends>:
+
+From the visual representation and analysis, it appears that PMI trends tend to lag behind Bitcoin prices. This lag can be interpreted as PMI reflecting broader economic conditions and business cycles, which eventually influence the liquidity in the market. As business cycles peak and liquidity flows increase, equity-like assets such as Bitcoin tend to reach their peak prices. This lagging nature suggests that PMI could be used as a predictive tool for anticipating future Bitcoin price movements, albeit with a slight delay. Economic Indicators as Business Cycle Representatives:
+
+PMI, as an indicator, represents the overall health of the manufacturing sector and, by extension, the business cycle. During periods of economic expansion, higher PMI values are observed, indicating increased business activity and higher liquidity in the market. This increased liquidity often flows into various asset classes, including equities and cryptocurrencies like Bitcoin. Therefore, a high PMI is often associated with bullish trends in Bitcoin prices, as observed in the initial EDA.
+
+#Research Questions
+
+Can we develop a more robust predictive model that incorporates multiple economic indicators to forecast future prices of Bitcoin? How does the inclusion of these indicators improve the accuracy of price predictions?
 
 
-```
-
-```{r}
-# Calculate correlation and fit a linear model
-lm_consumer <- lm(Close ~ `consumer confidence`, data = bitcoin_data)
-r_squared_consumer <- summary(lm_consumer)$r.squared
-
-# Plot with rescaled Consumer Confidence and regression line
-ggplot(bitcoin_data, aes(x = `consumer confidence`, y = Close)) +
-  geom_point() +
-  geom_smooth(method = "lm", color = "red") +
-  ggtitle(paste("Bitcoin Price vs. Consumer Confidence\nR-squared =", round(r_squared_consumer, 2))) +
-  xlab("Consumer Confidence") +
-  ylab("Bitcoin Price")
-
-
-```
-
-
-
-#Line Plot for Bitcoin Price and Manufacturing PMI
-
-```{r}
-# Rescale Manufacturing PMI to match the range of Bitcoin Prices
-max_price <- max(bitcoin_data$Close, na.rm = TRUE)
-min_price <- min(bitcoin_data$Close, na.rm = TRUE)
-
-bitcoin_data <- bitcoin_data %>%
-  mutate(manufacturing_pmi_scaled = scales::rescale(`manufacturing pmi`, to = c(min_price, max_price)))
-
-# Plot with rescaled Manufacturing PMI
-ggplot(bitcoin_data, aes(x = Date)) +
-  geom_line(aes(y = Close, color = "Bitcoin Price")) +
-  geom_line(aes(y = manufacturing_pmi_scaled, color = "Manufacturing PMI (scaled)")) +
-  ggtitle("Bitcoin Price and Manufacturing PMI Over Time") +
-  xlab("Date") +
-  ylab("Value") +
-  scale_color_manual(values = c("Bitcoin Price" = "black", "Manufacturing PMI (scaled)" = "blue"))
-
-
-
-```
-#Line Plot for Bitcoin Price and Service PMI
-```{r}
-# Rescale Services PMI to match the range of Bitcoin Prices
-bitcoin_data <- bitcoin_data %>%
-  mutate(services_pmi_scaled = scales::rescale(`services pmi`, to = c(min_price, max_price)))
-
-# Plot with rescaled Services PMI
-ggplot(bitcoin_data, aes(x = Date)) +
-  geom_line(aes(y = Close, color = "Bitcoin Price")) +
-  geom_line(aes(y = services_pmi_scaled, color = "Services PMI (scaled)")) +
-  ggtitle("Bitcoin Price and Services PMI Over Time") +
-  xlab("Date") +
-  ylab("Value") +
-  scale_color_manual(values = c("Bitcoin Price" = "black", "Services PMI (scaled)" = "green"))
-
-
-
-
-```
